@@ -32,9 +32,9 @@ contract XinvVesterFactory {
         xinv = _xinv;
     }
 
-    function deployVester(address _recipient, uint _invAmount, uint _vestingDurationSeconds, bool _isCancellable) public {
+    function deployVester(address _recipient, uint _invAmount, uint _vestingStartTimestamp, uint _vestingDurationSeconds, bool _isCancellable) public {
         require(msg.sender == governance, "ONLY GOVERNANCE");
-        XinvVester vester = new XinvVester(xinv, inv, governance, _recipient, _vestingDurationSeconds, _isCancellable);
+        XinvVester vester = new XinvVester(xinv, inv, governance, _recipient, _vestingStartTimestamp, _vestingDurationSeconds, _isCancellable);
         inv.transferFrom(governance, address(vester), _invAmount);
         vester.initialize();
         vesters.push(vester);
@@ -59,18 +59,18 @@ contract XinvVester {
     bool public isCancelled;
     uint public lastUpdate;
 
-    constructor(Ixinv _xinv, Iinv _inv, address _governance, address _recipient, uint _vestingDurationSeconds, bool _isCancellable) public {
+    constructor(Ixinv _xinv, Iinv _inv, address _governance, address _recipient, uint _vestingStartTimestamp, uint _vestingDurationSeconds, bool _isCancellable) public {
         require(_vestingDurationSeconds > 0, "DURATION IS 0");
         inv = _inv;
         xinv = _xinv;
-        vestingBegin = block.timestamp;
+        vestingBegin = _vestingStartTimestamp;
         vestingEnd = vestingBegin + _vestingDurationSeconds;
         recipient = _recipient;
         isCancellable = _isCancellable;
         governance = _governance;
         factory = msg.sender;
 
-        lastUpdate = block.timestamp;
+        lastUpdate = _vestingStartTimestamp;
 
         inv.delegate(_recipient);
         xinv.syncDelegate(address(this));
