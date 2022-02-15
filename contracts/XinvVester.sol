@@ -108,6 +108,7 @@ contract XinvVester {
     function claim() public {
         require(xinv.redeem(claimableXINV()) == 0, "REDEEM FAILED");
         inv.transfer(recipient, inv.balanceOf(address(this)));
+        lastUpdate = block.timestamp;
     }
 
     function cancel() public {
