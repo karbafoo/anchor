@@ -217,10 +217,26 @@ contract BaseJumpRateModelV2 {
             uint dolaPrice = dolaFeed.latestAnswer();
 
             if(dolaPrice < depegThreshold[0]){
-                currentRate -= rateStep;
+                // If DOLA price is under a negativeDepegThreshold price,
+                //  increase the borrow rate by a fixed value rateStep up 
+                //  to a maximum maxRate.
+                if(currentRate < rateRange[1]){
+                    currentRate += rateStep;
+                    if(currentRate > rateRange[1]){
+                        currentRate = rateRange[1];
+                    }
+                }
             }
             else if (dolaPrice > depegThreshold[1]){
-                currentRate += rateStep;
+                // If DOLA price is above a positiveDepegThreshold price, 
+                // decrease the borrow rate by the same rateStep down
+                //  to a minimum minRate.
+                if(currentRate > rateRange[0]){
+                    currentRate -= rateStep;
+                    if(currentRate < rateRange[0]){
+                        currentRate = rateRange[0];
+                    }
+                }
             }
             else{
                 // If DOLA price is between the two thresholds AND borrow rate is
