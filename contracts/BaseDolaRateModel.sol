@@ -199,7 +199,7 @@ contract BaseJumpRateModelV2 {
      * @param rateRange 
      * @param updateRateInterval 
      */
-    function updateDolaParams(uint baseRate, uint currentRate, uint rateStep, uint[2] memory depegThreshold, uint[2] memory rateRange, uint updateRateInterval) internal {
+    function updateDolaParams(uint baseRate, uint currentRate, uint rateStep, uint[2] memory depegThreshold, uint[2] memory rateRange, uint updateRateInterval) public {
         require(msg.sender == owner, "only the owner may call this function.");
         baseRate = baseRate;
         currentRate = currentRate;
